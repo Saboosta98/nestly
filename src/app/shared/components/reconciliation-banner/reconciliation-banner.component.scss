@@ -1,0 +1,68 @@
+@use '../../../../styles/mixins' as *;
+
+.recon {
+  @include glass-card;
+  @include fade-up;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.1rem 1.2rem;
+  animation-delay: 80ms;
+}
+
+.recon--ok {
+  border-color: color-mix(in srgb, var(--hb-primary) 35%, var(--hb-border));
+  background:
+    linear-gradient(120deg, rgba(34, 178, 166, 0.12), transparent 55%),
+    var(--hb-glass);
+}
+
+.recon--warn {
+  border-color: color-mix(in srgb, var(--hb-warning) 45%, var(--hb-border));
+  background:
+    linear-gradient(120deg, rgba(245, 185, 66, 0.14), transparent 55%),
+    var(--hb-glass);
+  animation: hb-pulse-soft 2.4s ease-in-out infinite;
+}
+
+.recon__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.recon--ok .recon__icon {
+  color: var(--hb-primary);
+  background: var(--hb-primary-soft);
+}
+
+.recon--warn .recon__icon {
+  color: var(--hb-warning);
+  background: rgba(245, 185, 66, 0.14);
+}
+
+.recon__body {
+  h2 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    color: var(--hb-text-muted);
+    font-size: 0.9rem;
+  }
+}
+
+.recon__delta {
+  margin-top: 0.35rem !important;
+  color: var(--hb-warning) !important;
+  font-weight: 600;
+}

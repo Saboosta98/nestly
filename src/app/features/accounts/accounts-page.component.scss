@@ -1,0 +1,43 @@
+@use '../../../styles/mixins' as *;
+
+.page-head {
+  margin-bottom: 1.25rem;
+
+  h2 {
+    font-size: 1.45rem;
+    margin-bottom: 0.4rem;
+  }
+
+  p {
+    color: var(--hb-text-muted);
+  }
+
+  strong {
+    color: var(--hb-text);
+  }
+}
+
+.accounts-grid {
+  display: grid;
+  gap: 0.9rem;
+
+  @media (min-width: 720px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.accounts-note {
+  @include glass-card;
+  margin-top: 1.25rem;
+  padding: 1.15rem 1.2rem;
+
+  h3 {
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
+  }
+
+  p {
+    color: var(--hb-text-muted);
+    font-size: 0.92rem;
+  }
+}

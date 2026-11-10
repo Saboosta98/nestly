@@ -1,0 +1,27 @@
+@mixin glass-card {
+  background: var(--hb-glass);
+  border: 1px solid var(--hb-border);
+  border-radius: var(--hb-radius-lg);
+  box-shadow: var(--hb-shadow);
+  backdrop-filter: blur(14px);
+}
+
+@mixin focus-ring {
+  outline: 2px solid var(--hb-primary);
+  outline-offset: 2px;
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin container {
+  width: min(100% - 2rem, var(--hb-content-max));
+  margin-inline: auto;
+}
+
+@mixin fade-up {
+  animation: hb-fade-up var(--hb-duration) var(--hb-ease) both;
+}

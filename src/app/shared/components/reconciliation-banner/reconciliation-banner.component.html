@@ -1,0 +1,36 @@
+<section
+  class="recon"
+  [class.recon--ok]="isReconciled"
+  [class.recon--warn]="!isReconciled"
+  aria-live="polite"
+>
+  <div class="recon__icon" aria-hidden="true">
+    @if (isReconciled) {
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" />
+        <path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    } @else {
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 8v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <circle cx="12" cy="16.5" r="1" fill="currentColor" />
+        <path d="M10.2 4.8L3.4 17.2A2 2 0 0 0 5.2 20h13.6a2 2 0 0 0 1.8-2.8L13.8 4.8a2 2 0 0 0-3.6 0Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+      </svg>
+    }
+  </div>
+
+  <div class="recon__body">
+    <h2>{{ isReconciled ? 'Finanzen abgestimmt' : 'Abstimmung weicht ab' }}</h2>
+    <p>
+      Gesamtguthaben {{ totalBalanceCents | centsCurrency }}
+      =
+      Budgets {{ totalBudgetBalanceCents | centsCurrency }}
+      + nicht zugeordnet {{ unassignedBalanceCents | centsCurrency }}
+    </p>
+    @if (!isReconciled) {
+      <p class="recon__delta">
+        Differenz: {{ reconciliationDeltaCents | centsCurrency: { signed: true } }}
+      </p>
+    }
+  </div>
+</section>

@@ -1,0 +1,131 @@
+@use '../../../styles/mixins' as *;
+
+.dash-hero {
+  @include glass-card;
+  @include fade-up;
+  position: relative;
+  overflow: hidden;
+  padding: 1.4rem 1.35rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.dash-hero__copy {
+  position: relative;
+  z-index: 1;
+  max-width: 34rem;
+
+  h2 {
+    margin: 0.45rem 0 0.65rem;
+    font-size: clamp(2rem, 7vw, 2.7rem);
+    letter-spacing: -0.04em;
+  }
+
+  p:last-child {
+    color: var(--hb-text-muted);
+    font-size: 0.95rem;
+  }
+}
+
+.dash-hero__eyebrow {
+  color: var(--hb-primary);
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dash-hero__glow {
+  position: absolute;
+  right: -20%;
+  top: -40%;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 178, 166, 0.28), transparent 68%);
+  pointer-events: none;
+}
+
+.dash-section {
+  margin-bottom: 1.65rem;
+}
+
+.dash-section__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+
+  h3 {
+    font-size: 1.05rem;
+  }
+
+  a,
+  .dash-toggle {
+    color: var(--hb-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+.dash-section__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.dash-accounts {
+  display: grid;
+  gap: 0.9rem;
+
+  @media (min-width: 720px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dash-stats {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.dash-budgets {
+  display: grid;
+  gap: 0.85rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 980px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.dash-loading {
+  @include glass-card;
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--hb-text-muted);
+}
+
+.dash-loading__bar {
+  height: 4px;
+  border-radius: 999px;
+  margin: 0 auto 1rem;
+  max-width: 180px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--hb-primary),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: hb-shimmer 1.4s linear infinite;
+}

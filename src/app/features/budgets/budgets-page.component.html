@@ -1,0 +1,21 @@
+@if (summary$ | async; as summary) {
+  <header class="page-head">
+    <h2>Budgets</h2>
+    <p>
+      {{ summary.activeBudgetCount }} aktive Budgets ·
+      Summe {{ summary.totalBudgetBalanceCents | centsCurrency }} ·
+      nicht zugeordnet {{ summary.unassignedBalanceCents | centsCurrency }}
+    </p>
+  </header>
+
+  <div class="budgets-grid">
+    @for (budget of summary.budgets; track budget.id; let i = $index) {
+      <app-budget-card
+        [budget]="budget"
+        [accounts]="summary.accounts"
+        [showAllocations]="showAllocations"
+        [delay]="i * 45"
+      />
+    }
+  </div>
+}

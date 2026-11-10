@@ -1,0 +1,72 @@
+@use '../../../../styles/mixins' as *;
+
+.tx-list {
+  @include glass-card;
+  overflow: hidden;
+}
+
+.tx-list__empty {
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--hb-text-muted);
+}
+
+.tx-item {
+  @include fade-up;
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid var(--hb-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.tx-item__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+
+  strong {
+    font-size: 0.98rem;
+  }
+}
+
+.tx-item__amount {
+  font-family: var(--hb-font-display);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &.is-income {
+    color: var(--hb-success);
+  }
+
+  &.is-expense {
+    color: var(--hb-secondary);
+  }
+
+  &.is-neutral {
+    color: var(--hb-text-muted);
+  }
+}
+
+.tx-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin-top: 0.4rem;
+  color: var(--hb-text-subtle);
+  font-size: 0.78rem;
+}
+
+.tx-item__type {
+  color: var(--hb-primary);
+}
+
+.tx-item__bank {
+  margin-top: 0.35rem;
+  color: var(--hb-text-muted);
+  font-size: 0.8rem;
+  @include truncate;
+}

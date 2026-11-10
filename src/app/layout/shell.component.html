@@ -1,0 +1,31 @@
+<div class="shell">
+  <header class="shell__top">
+    <div class="shell__brand">
+      <div class="shell__logo" aria-hidden="true">
+        <span></span>
+      </div>
+      <div>
+        <p class="shell__product">Haushalt</p>
+        <h1>Budget</h1>
+      </div>
+    </div>
+    <p class="shell__tagline">Gemeinsame Finanzen im Blick</p>
+  </header>
+
+  <main class="shell__main">
+    <router-outlet />
+  </main>
+
+  <nav class="shell__nav" aria-label="Hauptnavigation">
+    @for (item of navItems; track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: item.exact }"
+      >
+        <span class="shell__nav-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+</div>

@@ -1,0 +1,43 @@
+<article class="budget-card" [style.animation-delay.ms]="delay" [style.--budget-color]="budget.color">
+  <header class="budget-card__header">
+    <div class="budget-card__icon" aria-hidden="true">{{ budget.icon }}</div>
+    <div class="budget-card__titles">
+      <h3>{{ budget.name }}</h3>
+      <p>{{ budget.description }}</p>
+    </div>
+  </header>
+
+  <div class="budget-card__amount">
+    <strong>{{ budget.balanceCents | centsCurrency }}</strong>
+    @if (budget.targetAmountCents) {
+      <span>von {{ budget.targetAmountCents | centsCurrency }}</span>
+    }
+  </div>
+
+  @if (budget.progressPercent !== null) {
+    <div class="budget-card__progress" role="progressbar"
+      [attr.aria-valuenow]="budget.progressPercent"
+      aria-valuemin="0"
+      aria-valuemax="100">
+      <div class="budget-card__progress-track">
+        <div
+          class="budget-card__progress-fill"
+          [style.width.%]="budget.progressPercent"
+          [style.animation-delay.ms]="delay + 120"
+        ></div>
+      </div>
+      <span>{{ budget.progressPercent | number: '1.0-0' }}%</span>
+    </div>
+  }
+
+  @if (showAllocations && budget.allocations.length) {
+    <ul class="budget-card__allocations">
+      @for (alloc of budget.allocations; track alloc.id) {
+        <li>
+          <span>{{ accountName(alloc.accountId) }}</span>
+          <strong>{{ alloc.amountCents | centsCurrency }}</strong>
+        </li>
+      }
+    </ul>
+  }
+</article>

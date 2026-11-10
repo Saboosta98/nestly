@@ -1,0 +1,28 @@
+@if (summary$ | async; as summary) {
+  <header class="page-head">
+    <h2>Konten</h2>
+    <p>
+      Tatsächliche Bankkonten bei comdirect. Gesamtguthaben:
+      <strong>{{ summary.totalBalanceCents | centsCurrency }}</strong>
+    </p>
+  </header>
+
+  <div class="accounts-grid">
+    @for (account of summary.accounts; track account.id; let i = $index) {
+      <app-account-card
+        [account]="account"
+        [accent]="account.accountType === 'checking' ? 'primary' : 'secondary'"
+        [delay]="i * 70"
+      />
+    }
+  </div>
+
+  <section class="accounts-note">
+    <h3>Hinweis</h3>
+    <p>
+      Kontostände werden unabhängig von den virtuellen Budgets geführt.
+      Interne Umbuchungen zwischen Giro- und Tagesgeldkonto ändern nur die
+      Verteilung, nicht das Gesamtvermögen.
+    </p>
+  </section>
+}

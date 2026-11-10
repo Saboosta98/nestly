@@ -1,0 +1,113 @@
+@if (summary$ | async; as summary) {
+  <section class="dash-hero">
+    <div class="dash-hero__copy">
+      <p class="dash-hero__eyebrow">Haushaltsvermögen</p>
+      <h2>{{ summary.totalBalanceCents | centsCurrency }}</h2>
+      <p>
+        Gesamtsumme aus Girokonto und Tagesgeldkonto.
+        Virtuelle Budgets ordnen dieses Geld sinnvoll zu.
+      </p>
+    </div>
+    <div class="dash-hero__glow" aria-hidden="true"></div>
+  </section>
+
+  <section class="dash-section">
+    <div class="dash-section__head">
+      <h3>Konten</h3>
+      <a routerLink="/konten">Alle anzeigen</a>
+    </div>
+    <div class="dash-accounts">
+      @for (account of summary.accounts; track account.id; let i = $index) {
+        <app-account-card
+          [account]="account"
+          [accent]="account.accountType === 'checking' ? 'primary' : 'secondary'"
+          [delay]="i * 70"
+        />
+      }
+    </div>
+  </section>
+
+  <section class="dash-section">
+    <div class="dash-section__head">
+      <h3>Überblick</h3>
+    </div>
+    <div class="dash-stats">
+      <app-stat-chip
+        label="In Budgets"
+        [value]="summary.totalBudgetBalanceCents | centsCurrency"
+        hint="Virtuell zugeordnet"
+        tone="primary"
+        [delay]="40"
+      />
+      <app-stat-chip
+        label="Nicht zugeordnet"
+        [value]="summary.unassignedBalanceCents | centsCurrency"
+        hint="Frei verfügbar"
+        tone="secondary"
+        [delay]="90"
+      />
+      <app-stat-chip
+        label="Aktive Budgets"
+        [value]="'' + summary.activeBudgetCount"
+        hint="Virtuelle Töpfe"
+        [delay]="140"
+      />
+      <app-stat-chip
+        label="Rücklagen-Entwicklung"
+        [value]="summary.reserveTrendCents | centsCurrency: { signed: true }"
+        hint="Letzte 3 Monate"
+        tone="primary"
+        [delay]="190"
+      />
+    </div>
+  </section>
+
+  <section class="dash-section">
+    <app-reconciliation-banner
+      [totalBalanceCents]="summary.totalBalanceCents"
+      [totalBudgetBalanceCents]="summary.totalBudgetBalanceCents"
+      [unassignedBalanceCents]="summary.unassignedBalanceCents"
+      [isReconciled]="summary.isReconciled"
+      [reconciliationDeltaCents]="summary.reconciliationDeltaCents"
+    />
+  </section>
+
+  <section class="dash-section">
+    <div class="dash-section__head">
+      <h3>Budgets</h3>
+      <div class="dash-section__actions">
+        <button type="button" class="dash-toggle" (click)="toggleAllocations()">
+          {{ showAllocations ? 'Kontenanteile ausblenden' : 'Kontenanteile zeigen' }}
+        </button>
+        <a routerLink="/budgets">Alle anzeigen</a>
+      </div>
+    </div>
+    <div class="dash-budgets">
+      @for (budget of summary.budgets; track budget.id; let i = $index) {
+        <app-budget-card
+          [budget]="budget"
+          [accounts]="summary.accounts"
+          [showAllocations]="showAllocations"
+          [delay]="60 + i * 45"
+        />
+      }
+    </div>
+  </section>
+
+  <section class="dash-section">
+    <div class="dash-section__head">
+      <h3>Letzte Buchungen</h3>
+      <a routerLink="/buchungen">Alle anzeigen</a>
+    </div>
+    <app-transaction-list
+      [transactions]="summary.recentTransactions"
+      [accounts]="summary.accounts"
+      [budgets]="summary.budgets"
+    />
+  </section>
+} @else {
+  <div class="dash-loading" role="status">
+    <div class="dash-loading__bar"></div>
+    <p>Finanzübersicht wird geladen …</p>
+  </div>
+}

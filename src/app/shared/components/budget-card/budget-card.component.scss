@@ -1,0 +1,118 @@
+@use '../../../../styles/mixins' as *;
+
+.budget-card {
+  @include glass-card;
+  @include fade-up;
+  padding: 1.15rem 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  transition:
+    transform var(--hb-duration) var(--hb-ease),
+    border-color var(--hb-duration) var(--hb-ease);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--budget-color) 35%, var(--hb-border));
+  }
+}
+
+.budget-card__header {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.budget-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  background: color-mix(in srgb, var(--budget-color) 18%, transparent);
+  flex-shrink: 0;
+}
+
+.budget-card__titles {
+  min-width: 0;
+
+  h3 {
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin-top: 0.2rem;
+    color: var(--hb-text-muted);
+    font-size: 0.85rem;
+    @include truncate;
+  }
+}
+
+.budget-card__amount {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem;
+
+  strong {
+    font-family: var(--hb-font-display);
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+  }
+
+  span {
+    color: var(--hb-text-subtle);
+    font-size: 0.85rem;
+  }
+}
+
+.budget-card__progress {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.65rem;
+  align-items: center;
+
+  span {
+    color: var(--hb-text-muted);
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.budget-card__progress-track {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.budget-card__progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--budget-color), color-mix(in srgb, var(--budget-color) 60%, white));
+  transform-origin: left center;
+  animation: hb-progress 700ms var(--hb-ease) both;
+}
+
+.budget-card__allocations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--hb-border);
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--hb-text-muted);
+
+    strong {
+      color: var(--hb-text);
+      font-weight: 560;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}

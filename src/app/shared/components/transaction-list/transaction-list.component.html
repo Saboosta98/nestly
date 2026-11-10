@@ -1,0 +1,31 @@
+<div class="tx-list">
+  @if (!transactions.length) {
+    <div class="tx-list__empty">
+      <p>Noch keine Buchungen vorhanden.</p>
+    </div>
+  } @else {
+    <ul>
+      @for (tx of transactions; track tx.id; let i = $index) {
+        <li class="tx-item" [style.animation-delay.ms]="i * 40">
+          <div class="tx-item__main">
+            <div class="tx-item__top">
+              <strong>{{ tx.description }}</strong>
+              <span class="tx-item__amount" [class]="amountClass(tx)">
+                {{ tx.amountCents | centsCurrency: { signed: true } }}
+              </span>
+            </div>
+            <div class="tx-item__meta">
+              <span>{{ tx.date | germanDate }}</span>
+              <span>{{ accountName(tx.accountId) }}</span>
+              <span>{{ budgetName(tx.budgetId) }}</span>
+              <span class="tx-item__type">{{ typeLabel(tx.type) }}</span>
+            </div>
+            @if (tx.bankDescription) {
+              <p class="tx-item__bank">{{ tx.bankDescription }}</p>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

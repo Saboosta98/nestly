@@ -1,0 +1,17 @@
+@if (summary$ | async; as summary) {
+  <header class="page-head">
+    <h2>Buchungen</h2>
+    <p>
+      Einnahmen, Ausgaben und interne Umbuchungen. Interne Transfers erscheinen
+      neutral und zählen nicht als Haushalts-Cashflow.
+    </p>
+  </header>
+
+  @if (transactions$ | async; as transactions) {
+    <app-transaction-list
+      [transactions]="transactions"
+      [accounts]="summary.accounts"
+      [budgets]="summary.budgets"
+    />
+  }
+}

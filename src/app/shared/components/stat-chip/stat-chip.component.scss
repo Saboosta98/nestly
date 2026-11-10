@@ -1,0 +1,39 @@
+@use '../../../../styles/mixins' as *;
+
+.stat-chip {
+  @include glass-card;
+  @include fade-up;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 108px;
+}
+
+.stat-chip__label {
+  color: var(--hb-text-muted);
+  font-size: 0.82rem;
+}
+
+.stat-chip__value {
+  font-family: var(--hb-font-display);
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.stat-chip__hint {
+  color: var(--hb-text-subtle);
+  font-size: 0.78rem;
+}
+
+.tone-primary .stat-chip__value {
+  color: var(--hb-primary);
+}
+
+.tone-secondary .stat-chip__value {
+  color: var(--hb-secondary);
+}
+
+.tone-warning .stat-chip__value {
+  color: var(--hb-warning);
+}

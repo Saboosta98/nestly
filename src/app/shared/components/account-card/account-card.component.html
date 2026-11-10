@@ -1,0 +1,30 @@
+<article
+  class="account-card"
+  [class.account-card--primary]="accent === 'primary'"
+  [class.account-card--secondary]="accent === 'secondary'"
+  [style.animation-delay.ms]="delay"
+>
+  <header class="account-card__header">
+    <div class="account-card__identity">
+      <span class="account-card__badge">{{ typeLabel }}</span>
+      <h3>{{ account.name }}</h3>
+      <p>{{ account.bank }}</p>
+    </div>
+    <div class="account-card__mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="5" width="20" height="14" rx="3" stroke="currentColor" stroke-width="1.5" />
+        <path d="M2 10h20" stroke="currentColor" stroke-width="1.5" />
+        <circle cx="7" cy="15" r="1.2" fill="currentColor" />
+      </svg>
+    </div>
+  </header>
+
+  <div class="account-card__balance">
+    <span class="account-card__label">Kontostand</span>
+    <strong>{{ account.currentBalanceCents | centsCurrency }}</strong>
+  </div>
+
+  <footer class="account-card__footer">
+    <span>Abgleich {{ account.balanceDate | germanDate }}</span>
+  </footer>
+</article>

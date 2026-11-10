@@ -1,0 +1,11 @@
+<div
+  class="stat-chip"
+  [class]="'stat-chip tone-' + tone"
+  [style.animation-delay.ms]="delay"
+>
+  <span class="stat-chip__label">{{ label }}</span>
+  <strong class="stat-chip__value">{{ value }}</strong>
+  @if (hint) {
+    <span class="stat-chip__hint">{{ hint }}</span>
+  }
+</div>

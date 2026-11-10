@@ -1,0 +1,56 @@
+:root {
+  /* Brand palette */
+  --hb-bg: #0c1927;
+  --hb-bg-elevated: #122334;
+  --hb-bg-soft: #163044;
+  --hb-bg-hover: #1a3a52;
+  --hb-primary: #22b2a6;
+  --hb-primary-soft: rgba(34, 178, 166, 0.14);
+  --hb-primary-strong: #1a948a;
+  --hb-secondary: #e94591;
+  --hb-secondary-soft: rgba(233, 69, 145, 0.14);
+  --hb-white: #ffffff;
+  --hb-text: #f4f7fb;
+  --hb-text-muted: #8fa3b8;
+  --hb-text-subtle: #6b8299;
+  --hb-border: rgba(255, 255, 255, 0.08);
+  --hb-border-strong: rgba(255, 255, 255, 0.14);
+  --hb-success: #3dd68c;
+  --hb-warning: #f5b942;
+  --hb-danger: #ff6b7a;
+  --hb-danger-soft: rgba(255, 107, 122, 0.14);
+
+  /* Surfaces */
+  --hb-glass: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  --hb-glow-primary: 0 0 40px rgba(34, 178, 166, 0.18);
+  --hb-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+
+  /* Typography */
+  --hb-font-display: 'Sora', system-ui, sans-serif;
+  --hb-font-body: 'DM Sans', system-ui, sans-serif;
+
+  /* Layout */
+  --hb-radius-sm: 10px;
+  --hb-radius-md: 16px;
+  --hb-radius-lg: 22px;
+  --hb-radius-xl: 28px;
+  --hb-nav-height: 64px;
+  --hb-content-max: 1180px;
+  --hb-space-1: 0.25rem;
+  --hb-space-2: 0.5rem;
+  --hb-space-3: 0.75rem;
+  --hb-space-4: 1rem;
+  --hb-space-5: 1.25rem;
+  --hb-space-6: 1.5rem;
+  --hb-space-8: 2rem;
+  --hb-space-10: 2.5rem;
+  --hb-space-12: 3rem;
+
+  /* Motion */
+  --hb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --hb-duration: 280ms;
+}
