@@ -18,11 +18,76 @@
   </div>
 
   <section class="accounts-note">
-    <h3>Hinweis</h3>
-    <p>
-      Kontostände werden unabhängig von den virtuellen Budgets geführt.
-      Interne Umbuchungen zwischen Giro- und Tagesgeldkonto ändern nur die
-      Verteilung, nicht das Gesamtvermögen.
-    </p>
+    <h3>Interne Umbuchung</h3>
+    <p>Zwischen Giro und Tagesgeld – zählt nicht als Einnahme/Ausgabe.</p>
+    <form class="form" (submit)="$event.preventDefault(); submitTransfer(summary.accounts)">
+      <label>
+        <span>Von</span>
+        <select [(ngModel)]="transferFrom" name="transferFrom">
+          @for (account of summary.accounts; track account.id) {
+            <option [value]="account.id">{{ account.name }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        <span>Nach</span>
+        <select [(ngModel)]="transferTo" name="transferTo">
+          @for (account of summary.accounts; track account.id) {
+            <option [value]="account.id">{{ account.name }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        <span>Betrag (Euro)</span>
+        <input type="text" inputmode="decimal" [(ngModel)]="transferAmountEuro" name="transferAmountEuro" />
+      </label>
+      <label>
+        <span>Datum</span>
+        <input type="date" [(ngModel)]="transferDate" name="transferDate" />
+      </label>
+      <label class="span-2">
+        <span>Notiz</span>
+        <input type="text" [(ngModel)]="transferNote" name="transferNote" />
+      </label>
+      <button type="submit" class="btn">Umbuchen</button>
+    </form>
   </section>
+
+  <section class="accounts-note">
+    <h3>Saldenkorrektur</h3>
+    <p>
+      Kontostand an den Bankauszug anpassen. Erzeugt eine Korrektur-Buchung
+      (ohne Budget), sofern der Stand sich ändert.
+    </p>
+    <form class="form" (submit)="$event.preventDefault(); submitCorrection()">
+      <label>
+        <span>Konto</span>
+        <select [(ngModel)]="correctionAccountId" name="correctionAccountId">
+          @for (account of summary.accounts; track account.id) {
+            <option [value]="account.id">{{ account.name }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        <span>Neuer Stand (Euro)</span>
+        <input type="text" inputmode="decimal" [(ngModel)]="correctionEuro" name="correctionEuro" />
+      </label>
+      <label>
+        <span>Datum</span>
+        <input type="date" [(ngModel)]="correctionDate" name="correctionDate" />
+      </label>
+      <label>
+        <span>Notiz</span>
+        <input type="text" [(ngModel)]="correctionNote" name="correctionNote" />
+      </label>
+      <button type="submit" class="btn">Korrigieren</button>
+    </form>
+  </section>
+
+  @if (error) {
+    <p class="flash flash--error">{{ error }}</p>
+  }
+  @if (message) {
+    <p class="flash flash--ok">{{ message }}</p>
+  }
 }

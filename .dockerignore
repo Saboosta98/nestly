@@ -1,0 +1,9 @@
+node_modules
+server/node_modules
+server/data
+dist
+.angular
+.git
+coverage
+*.md
+!README.md

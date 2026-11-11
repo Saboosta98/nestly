@@ -1,0 +1,161 @@
+@use '../../../styles/mixins' as *;
+
+.page-head {
+  margin-bottom: 1.25rem;
+
+  h2 {
+    font-size: 1.45rem;
+    margin-bottom: 0.4rem;
+  }
+
+  p {
+    color: var(--hb-text-muted);
+  }
+}
+
+.panel {
+  @include glass-card;
+  padding: 1.15rem 1.2rem;
+  margin-bottom: 1rem;
+
+  h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.55rem;
+  }
+}
+
+.import-form {
+  display: grid;
+  gap: 0.9rem;
+
+  label {
+    display: grid;
+    gap: 0.35rem;
+
+    span {
+      font-size: 0.82rem;
+      color: var(--hb-text-muted);
+      font-weight: 600;
+    }
+  }
+
+  input,
+  select {
+    width: 100%;
+    border-radius: var(--hb-radius-sm);
+    border: 1px solid var(--hb-border-strong);
+    background: var(--hb-bg-soft);
+    padding: 0.7rem 0.8rem;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.btn {
+  border-radius: 999px;
+  padding: 0.65rem 1.1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+
+  &--primary {
+    background: var(--hb-primary);
+    color: #042028;
+  }
+
+  &--ghost {
+    border: 1px solid var(--hb-border-strong);
+    color: var(--hb-text);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.msg {
+  margin-top: 0.85rem;
+  font-size: 0.92rem;
+
+  &--error {
+    color: var(--hb-danger);
+  }
+
+  &--ok {
+    color: var(--hb-success);
+  }
+}
+
+.meta {
+  color: var(--hb-text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.85rem;
+}
+
+.preview-list,
+.history {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.preview-list li,
+.history li {
+  padding: 0.7rem 0.75rem;
+  border-radius: var(--hb-radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--hb-border);
+}
+
+.preview-list li.is-dup {
+  opacity: 0.55;
+}
+
+.preview-list__top,
+.history li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.preview-list__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
+  color: var(--hb-text-subtle);
+  font-size: 0.8rem;
+}
+
+.tag {
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: var(--hb-secondary-soft);
+  color: var(--hb-secondary);
+
+  &--xfer {
+    background: var(--hb-primary-soft);
+    color: var(--hb-primary);
+  }
+}
+
+.empty {
+  color: var(--hb-text-muted);
+}
+
+.hint {
+  p {
+    color: var(--hb-text-muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  code {
+    font-size: 0.85em;
+    color: var(--hb-primary);
+  }
+}

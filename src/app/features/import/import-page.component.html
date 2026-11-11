@@ -1,0 +1,126 @@
+<header class="page-head">
+  <h2>CSV-Import</h2>
+  <p>
+    comdirect-Export (Semikolon, Dezimal-Komma) für Giro- oder Tagesgeldkonto.
+    Duplikate werden erkannt; passende Umbuchungen Giro↔Tagesgeld als interne
+    Transfers markiert.
+  </p>
+</header>
+
+<section class="panel">
+  <form class="import-form" (submit)="$event.preventDefault()">
+    <label>
+      <span>Konto</span>
+      <select [(ngModel)]="accountId" name="accountId">
+        @if (accounts$ | async; as accounts) {
+          @for (account of accounts; track account.id) {
+            <option [value]="account.id">{{ account.name }}</option>
+          }
+        }
+      </select>
+    </label>
+
+    <label>
+      <span>CSV-Datei</span>
+      <input type="file" accept=".csv,text/csv" (change)="onFileChange($event)" />
+    </label>
+
+    <label>
+      <span>Neuer Kontostand nach Import (optional, Euro)</span>
+      <input
+        type="text"
+        inputmode="decimal"
+        [(ngModel)]="balanceEuro"
+        name="balanceEuro"
+        placeholder="z. B. 3200,00"
+      />
+    </label>
+
+    <div class="actions">
+      <button type="button" class="btn btn--ghost" (click)="previewImport()" [disabled]="busy">
+        Vorschau
+      </button>
+      <button
+        type="button"
+        class="btn btn--primary"
+        (click)="confirmImport()"
+        [disabled]="busy || !preview"
+      >
+        Import bestätigen
+      </button>
+    </div>
+  </form>
+
+  @if (error) {
+    <p class="msg msg--error" role="alert">{{ error }}</p>
+  }
+  @if (success) {
+    <p class="msg msg--ok">{{ success }}</p>
+  }
+</section>
+
+@if (preview) {
+  <section class="panel">
+    <h3>Vorschau · {{ preview.filename }}</h3>
+    <p class="meta">
+      {{ preview.totalRows }} Zeilen ·
+      {{ preview.newCount }} neu ·
+      {{ preview.duplicateCount }} Duplikate ·
+      {{ preview.internalTransferCount }} Umbuchungen
+    </p>
+    <ul class="preview-list">
+      @for (row of preview.rows; track row.fingerprint) {
+        <li [class.is-dup]="row.isDuplicate" [class.is-xfer]="row.suggestedType === 'internal_transfer'">
+          <div class="preview-list__top">
+            <strong>{{ row.description }}</strong>
+            <span>{{ row.amountCents | centsCurrency: { signed: true } }}</span>
+          </div>
+          <div class="preview-list__meta">
+            <span>{{ row.bookingDate | germanDate }}</span>
+            <span>{{ row.suggestedType }}</span>
+            @if (row.isDuplicate) {
+              <span class="tag">Duplikat</span>
+            }
+            @if (row.suggestedType === 'internal_transfer') {
+              <span class="tag tag--xfer">Umbuchung</span>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+}
+
+<section class="panel">
+  <h3>Import-Historie</h3>
+  @if (imports$ | async; as batches) {
+    @if (!batches.length) {
+      <p class="empty">Noch keine Imports.</p>
+    } @else {
+      <ul class="history">
+        @for (batch of batches; track batch.id) {
+          <li>
+            <strong>{{ batch.filename }}</strong>
+            <span>{{ batch.importedAt | germanDate }}</span>
+            <span>
+              {{ batch.newTransactions }} neu /
+              {{ batch.duplicateTransactions }} Duplikate /
+              {{ batch.unassignedTransactions }} ohne Budget
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>
+
+<section class="panel hint">
+  <h3>Erwartetes CSV-Format</h3>
+  <p>
+    Semikolon-getrennt, UTF-8 (BOM ok). Spalten u. a.
+    <code>Buchungstag</code>, <code>Wertstellung</code>, <code>Umsatzart</code>,
+    <code>Buchungstext</code>, <code>Betrag</code>, optional
+    <code>Beleg</code>/<code>Referenz</code>. Beträge mit Komma
+    (<code>-86,40</code>). Beispiel: <code>server/fixtures/comdirect-sample.csv</code>.
+  </p>
+</section>

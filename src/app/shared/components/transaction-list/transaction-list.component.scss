@@ -70,3 +70,17 @@
   font-size: 0.8rem;
   @include truncate;
 }
+
+.tx-item__assign {
+  display: block;
+  margin-top: 0.55rem;
+
+  select {
+    width: min(100%, 16rem);
+    border-radius: var(--hb-radius-sm);
+    border: 1px solid var(--hb-border-strong);
+    background: var(--hb-bg-soft);
+    padding: 0.45rem 0.6rem;
+    font-size: 0.85rem;
+  }
+}
