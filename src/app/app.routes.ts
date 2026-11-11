@@ -12,7 +12,7 @@ export const routes: Routes = [
           import('./features/dashboard/dashboard.component').then(
             (m) => m.DashboardComponent,
           ),
-        title: 'Dashboard · Haushalt Budget',
+        title: 'Dashboard · Nestly',
       },
       {
         path: 'konten',
@@ -20,7 +20,7 @@ export const routes: Routes = [
           import('./features/accounts/accounts-page.component').then(
             (m) => m.AccountsPageComponent,
           ),
-        title: 'Konten · Haushalt Budget',
+        title: 'Konten · Nestly',
       },
       {
         path: 'budgets',
@@ -28,7 +28,7 @@ export const routes: Routes = [
           import('./features/budgets/budgets-page.component').then(
             (m) => m.BudgetsPageComponent,
           ),
-        title: 'Budgets · Haushalt Budget',
+        title: 'Budgets · Nestly',
       },
       {
         path: 'buchungen',
@@ -36,7 +36,15 @@ export const routes: Routes = [
           import('./features/transactions/transactions-page.component').then(
             (m) => m.TransactionsPageComponent,
           ),
-        title: 'Buchungen · Haushalt Budget',
+        title: 'Buchungen · Nestly',
+      },
+      {
+        path: 'import',
+        loadComponent: () =>
+          import('./features/import/import-page.component').then(
+            (m) => m.ImportPageComponent,
+          ),
+        title: 'CSV-Import · Nestly',
       },
     ],
   },

@@ -1,3 +1,5 @@
+@use '../../../styles/mixins' as *;
+
 .page-head {
   margin-bottom: 1.25rem;
 
@@ -8,6 +10,73 @@
 
   p {
     color: var(--hb-text-muted);
+  }
+}
+
+.panel {
+  @include glass-card;
+  padding: 1.1rem 1.15rem;
+  margin-bottom: 1.1rem;
+
+  h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.form {
+  display: grid;
+  gap: 0.75rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  label {
+    display: grid;
+    gap: 0.3rem;
+
+    span {
+      font-size: 0.8rem;
+      color: var(--hb-text-muted);
+      font-weight: 600;
+    }
+  }
+
+  .span-2 {
+    @media (min-width: 640px) {
+      grid-column: span 2;
+    }
+  }
+
+  input {
+    width: 100%;
+    border-radius: var(--hb-radius-sm);
+    border: 1px solid var(--hb-border-strong);
+    background: var(--hb-bg-soft);
+    padding: 0.65rem 0.75rem;
+  }
+}
+
+.btn {
+  justify-self: start;
+  border-radius: 999px;
+  padding: 0.65rem 1.1rem;
+  background: var(--hb-primary);
+  color: #042028;
+  font-weight: 600;
+}
+
+.flash {
+  margin-bottom: 0.85rem;
+  font-size: 0.92rem;
+
+  &--error {
+    color: var(--hb-danger);
+  }
+
+  &--ok {
+    color: var(--hb-success);
   }
 }
 
@@ -22,4 +91,26 @@
   @media (min-width: 980px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+.budget-wrap {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.budget-actions {
+  display: flex;
+  gap: 0.85rem;
+  padding-inline: 0.2rem;
+}
+
+.linkish {
+  color: var(--hb-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.edit-form {
+  @include glass-card;
+  padding: 0.85rem;
 }
