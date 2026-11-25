@@ -1,17 +1,85 @@
 @if (summary$ | async; as summary) {
   <header class="page-head">
-    <h2>Buchungen</h2>
-    <p>
-      Einnahmen, Ausgaben und interne Umbuchungen. Interne Transfers erscheinen
-      neutral und zählen nicht als Haushalts-Cashflow.
-    </p>
+    <div>
+      <h2>Buchungen</h2>
+      <p>
+        Einnahmen, Ausgaben und interne Umbuchungen. Interne Transfers erscheinen
+        neutral und zählen nicht als Haushalts-Cashflow.
+      </p>
+    </div>
+    <a routerLink="/import" class="cta">CSV importieren</a>
   </header>
+
+  <section class="panel">
+    <h3>Buchung manuell</h3>
+    <form class="form" (submit)="$event.preventDefault(); createBooking()">
+      <label>
+        <span>Konto</span>
+        <select [(ngModel)]="accountId" name="accountId">
+          @for (account of summary.accounts; track account.id) {
+            <option [value]="account.id">{{ account.name }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        <span>Typ</span>
+        <select [(ngModel)]="type" name="type">
+          <option value="expense">Ausgabe</option>
+          <option value="income">Einnahme</option>
+        </select>
+      </label>
+      <label>
+        <span>Betrag (Euro)</span>
+        <input type="text" inputmode="decimal" [(ngModel)]="amountEuro" name="amountEuro" />
+      </label>
+      <label>
+        <span>Datum</span>
+        <input type="date" [(ngModel)]="date" name="date" />
+      </label>
+      <label class="span-2">
+        <span>Beschreibung</span>
+        <input [(ngModel)]="description" name="description" />
+      </label>
+      <label class="span-2">
+        <span>Budget (optional)</span>
+        <select [(ngModel)]="budgetId" name="budgetId">
+          <option value="">Nicht zugeordnet</option>
+          @for (budget of summary.budgets; track budget.id) {
+            <option [value]="budget.id">{{ budget.name }}</option>
+          }
+        </select>
+      </label>
+      <button type="submit" class="btn">Speichern</button>
+    </form>
+  </section>
+
+  <div class="filters">
+    <button type="button" [class.is-active]="filter === 'all'" (click)="filter = 'all'">
+      Alle
+    </button>
+    <button
+      type="button"
+      [class.is-active]="filter === 'unassigned'"
+      (click)="filter = 'unassigned'"
+    >
+      Ohne Budget
+    </button>
+  </div>
+
+  @if (error) {
+    <p class="flash flash--error">{{ error }}</p>
+  }
+  @if (message) {
+    <p class="flash flash--ok">{{ message }}</p>
+  }
 
   @if (transactions$ | async; as transactions) {
     <app-transaction-list
-      [transactions]="transactions"
+      [transactions]="filtered(transactions)"
       [accounts]="summary.accounts"
       [budgets]="summary.budgets"
+      [assignable]="true"
+      (assign)="onAssign($event)"
     />
   }
 }

@@ -5,12 +5,31 @@
         <span></span>
       </div>
       <div>
-        <p class="shell__product">Haushalt</p>
+        <p class="shell__product">Nestly</p>
         <h1>Budget</h1>
       </div>
     </div>
     <p class="shell__tagline">Gemeinsame Finanzen im Blick</p>
   </header>
+
+  @if (showAuth) {
+    <section class="shell__auth" aria-label="Zugang">
+      <p>Diese Instanz ist mit einem Kennwort geschützt.</p>
+      <form (submit)="$event.preventDefault(); savePassword()">
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="NESTLY_PASSWORD"
+          autocomplete="current-password"
+        />
+        <button type="submit">Entsperren</button>
+      </form>
+      @if (authError) {
+        <p class="shell__auth-error">{{ authError }}</p>
+      }
+    </section>
+  }
 
   <main class="shell__main">
     <router-outlet />

@@ -17,9 +17,25 @@
             <div class="tx-item__meta">
               <span>{{ tx.date | germanDate }}</span>
               <span>{{ accountName(tx.accountId) }}</span>
-              <span>{{ budgetName(tx.budgetId) }}</span>
+              @if (!canAssign(tx)) {
+                <span>{{ budgetName(tx.budgetId) }}</span>
+              }
               <span class="tx-item__type">{{ typeLabel(tx.type) }}</span>
             </div>
+            @if (canAssign(tx)) {
+              <label class="tx-item__assign">
+                <span class="sr-only">Budget zuordnen</span>
+                <select
+                  [ngModel]="tx.budgetId ?? ''"
+                  (ngModelChange)="onBudgetChange(tx, $event)"
+                >
+                  <option value="">Nicht zugeordnet</option>
+                  @for (budget of budgets; track budget.id) {
+                    <option [value]="budget.id">{{ budget.name }}</option>
+                  }
+                </select>
+              </label>
+            }
             @if (tx.bankDescription) {
               <p class="tx-item__bank">{{ tx.bankDescription }}</p>
             }

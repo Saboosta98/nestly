@@ -8,14 +8,71 @@
     </p>
   </header>
 
+  <section class="panel">
+    <h3>Neues Budget</h3>
+    <form class="form" (submit)="$event.preventDefault(); createBudget()">
+      <label>
+        <span>Name</span>
+        <input [(ngModel)]="name" name="name" required />
+      </label>
+      <label>
+        <span>Zielbetrag (Euro, optional)</span>
+        <input type="text" inputmode="decimal" [(ngModel)]="targetEuro" name="targetEuro" />
+      </label>
+      <label class="span-2">
+        <span>Beschreibung</span>
+        <input [(ngModel)]="description" name="description" />
+      </label>
+      <label>
+        <span>Icon</span>
+        <input [(ngModel)]="icon" name="icon" />
+      </label>
+      <label>
+        <span>Farbe</span>
+        <input type="color" [(ngModel)]="color" name="color" />
+      </label>
+      <button type="submit" class="btn">Anlegen</button>
+    </form>
+  </section>
+
+  @if (error) {
+    <p class="flash flash--error">{{ error }}</p>
+  }
+  @if (message) {
+    <p class="flash flash--ok">{{ message }}</p>
+  }
+
   <div class="budgets-grid">
     @for (budget of summary.budgets; track budget.id; let i = $index) {
-      <app-budget-card
-        [budget]="budget"
-        [accounts]="summary.accounts"
-        [showAllocations]="showAllocations"
-        [delay]="i * 45"
-      />
+      <div class="budget-wrap">
+        <app-budget-card
+          [budget]="budget"
+          [accounts]="summary.accounts"
+          [showAllocations]="showAllocations"
+          [delay]="i * 45"
+        />
+        <div class="budget-actions">
+          <button type="button" class="linkish" (click)="startEdit(budget)">Bearbeiten</button>
+          <button type="button" class="linkish" (click)="archiveBudget(budget.id)">Archivieren</button>
+        </div>
+        @if (editingId === budget.id) {
+          <form class="form edit-form" (submit)="$event.preventDefault(); saveEdit()">
+            <label>
+              <span>Name</span>
+              <input [(ngModel)]="editName" name="editName" />
+            </label>
+            <label>
+              <span>Ziel (Euro)</span>
+              <input [(ngModel)]="editTargetEuro" name="editTargetEuro" />
+            </label>
+            <label class="span-2">
+              <span>Beschreibung</span>
+              <input [(ngModel)]="editDescription" name="editDescription" />
+            </label>
+            <button type="submit" class="btn">Speichern</button>
+          </form>
+        }
+      </div>
     }
   </div>
 }

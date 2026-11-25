@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Transaction, TransactionType } from '../../../core/models/transaction.model';
 import { Account } from '../../../core/models/account.model';
 import { Budget } from '../../../core/models/budget.model';
@@ -8,7 +9,7 @@ import { GermanDatePipe } from '../../pipes/german-date.pipe';
 @Component({
   selector: 'app-transaction-list',
   standalone: true,
-  imports: [CentsCurrencyPipe, GermanDatePipe],
+  imports: [FormsModule, CentsCurrencyPipe, GermanDatePipe],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.scss',
 })
@@ -16,6 +17,11 @@ export class TransactionListComponent {
   @Input({ required: true }) transactions!: Transaction[];
   @Input() accounts: Account[] = [];
   @Input() budgets: Budget[] = [];
+  @Input() assignable = false;
+  @Output() assign = new EventEmitter<{
+    transactionId: string;
+    budgetId: string | null;
+  }>();
 
   accountName(id: string | null): string {
     if (!id) {
@@ -53,5 +59,20 @@ export class TransactionListComponent {
       return 'is-neutral';
     }
     return tx.amountCents >= 0 ? 'is-income' : 'is-expense';
+  }
+
+  canAssign(tx: Transaction): boolean {
+    return (
+      this.assignable &&
+      tx.type !== 'internal_transfer' &&
+      tx.type !== 'budget_transfer'
+    );
+  }
+
+  onBudgetChange(tx: Transaction, value: string): void {
+    this.assign.emit({
+      transactionId: tx.id,
+      budgetId: value ? value : null,
+    });
   }
 }

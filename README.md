@@ -1,81 +1,103 @@
-# Haushalt Budget
+# Nestly (Haushalt Budget)
 
-Moderne Web-App zur Verwaltung gemeinsamer Haushaltsfinanzen mit realen Bankkonten und virtuellen Budgets.
+Self-hosted Web-App für gemeinsame Haushaltsfinanzen: reale comdirect-Konten, virtuelle Budgets, CSV-Import.
 
 ## Konzept
 
-- **Bankkonten** halten das tatsächliche Geld (Girokonto + Tagesgeldkonto bei comdirect).
-- **Budgets** sind virtuelle Töpfe (Urlaub, Auto, Rücklagen, …) ohne feste Kontobindung.
-- **BudgetAllocations** beschreiben optional, wie viel eines Budgets physisch auf welchem Konto liegt.
+- **Bankkonten** halten das tatsächliche Geld (Giro + Tagesgeld bei comdirect).
+- **Budgets** sind virtuelle Töpfe ohne feste Kontobindung.
 - Interne Umbuchungen zwischen Konten sind **keine** Einnahmen/Ausgaben.
 - Abstimmung: `Gesamtguthaben = Summe Budgets + nicht zugeordnetes Guthaben`.
+- Beträge intern als **Integer in Cent**.
 
-Geldbeträge werden intern ausschließlich als **Integer in Cent** gespeichert.
+## Stack
 
-## Aktueller Stand (Phase 1–2)
+| Teil | Technik |
+|------|---------|
+| UI | Angular 19 SPA |
+| API | Express + SQLite (`better-sqlite3`) |
+| Deploy | Docker Compose hinter nginx/Caddy |
 
-- Angular 19, TypeScript, SCSS, Standalone Components, Routing
-- Designsystem (Farben, Typografie, Motion)
-- Dashboard mit Konten-, Budget- und Buchungsübersicht
-- Funktionierende Berechnungen auf Demo-Daten
-- Architektur vorbereitet für späteren Appwrite-Datenzugriff (`HouseholdDataSource`)
-- PWA-Grundlage (Manifest, Icons, Mobile-First)
-
-Noch nicht umgesetzt (geplante Phasen): Appwrite Auth/DB, CSV-Import comdirect, Docker/nginx-Produktion.
-
-## Lokal starten
+## Lokal entwickeln
 
 ```bash
-npm install
-npm start
+npm install          # installiert auch server/
+npm run start:api    # API http://127.0.0.1:4318
+npm start            # Angular http://localhost:4317 (Proxy /api → 4318)
 ```
 
-Die App läuft unter [http://localhost:4317](http://localhost:4317).
+Oder parallel: `npm run dev`.
 
-Weitere Skripte:
+Optional nur Demo-Daten (ohne API):
 
 ```bash
-npm run build    # Produktionsbuild
-npm test         # Unit-Tests (Karma/Jasmine)
+npm run start:demo
 ```
+
+Tests:
+
+```bash
+npm run test:server  # CSV-Parser, Dedup, Transfer-Erkennung
+npm test             # Angular (Karma headless)
+npm run build        # Produktionsbuild → dist/household-budget/browser
+```
+
+## Produktion mit Docker
+
+```bash
+# optional: echo 'NESTLY_PASSWORD=geheim' > .env
+docker compose up -d --build
+```
+
+- App/API: `http://127.0.0.1:4318`
+- Persistenz: Volume `nestly-data` → `/data/nestly.sqlite`
+- Env: `DATA_DIR`, `NESTLY_PASSWORD` (optional), `PORT`, `STATIC_DIR`
+
+Ohne Kennwort ist die API im LAN offen – hinter dem öffentlichen Proxy besser `NESTLY_PASSWORD` setzen.
+
+### Reverse-Proxy (nestly.inthecorner.de)
+
+nginx:
+
+```nginx
+server {
+  server_name nestly.inthecorner.de;
+  # ssl … wie üblich
+
+  location / {
+    proxy_pass http://127.0.0.1:4318;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+}
+```
+
+Caddy:
+
+```caddy
+nestly.inthecorner.de {
+  reverse_proxy 127.0.0.1:4318
+}
+```
+
+Der Node-Prozess liefert SPA + `/api` aus einem Port; SPA-Fallback ist eingebaut.
+
+## CSV-Import (comdirect)
+
+Siehe [docs/CSV-IMPORT.md](docs/CSV-IMPORT.md). Fixtures: `server/fixtures/`.
 
 ## Architektur
 
 ```
-src/app/
-  core/
-    models/           # Domain-Typen
-    repositories/     # Abstract DataSource + Demo-Implementierung
-    services/         # Geschäftslogik (FinanceCalculator, FinanceService)
-  features/           # Seiten (Dashboard, Konten, Budgets, Buchungen)
-  shared/             # UI-Bausteine & Pipes
-  layout/             # App-Shell / Navigation
+src/app/          Angular UI + HttpDataSource
+server/           Express API + SQLite + CSV-Logik
+docs/             Architektur & CSV-Format
 ```
 
-`FinanceService` orchestriert Daten + Berechnung. UI kennt keine Persistenzdetails. Später reicht ein Tausch von `DemoDataSource` → `AppwriteDataSource` in `app.config.ts`.
+`FinanceService` orchestriert Daten + Berechnung. UI kennt keine Persistenzdetails.
 
-## Demo-Daten (Auszug)
+## Seed
 
-| Konto           | Stand      |
-|-----------------|------------|
-| Girokonto       | 3.200,00 € |
-| Tagesgeldkonto  | 12.000,00 € |
-| **Gesamt**      | **15.200,00 €** |
-
-Budgets summieren sich auf 14.000,00 € → nicht zugeordnet 1.200,00 €.
-
-Beispiel Urlaub (3.000 €): 2.500 € auf Tagesgeld + 500 € auf Giro.
-
-## Designentscheidungen
-
-- Eigenständiges dunkles Finanz-UI mit Teal (`#22b2a6`) und Magenta (`#e94591`) auf `#0c1927`
-- Schriften: **Sora** (Display) + **DM Sans** (Text)
-- Mobile First mit iPhone-safe-area und Bottom-Navigation
-- Keine zweite „Buchungswahrheit“: Budgetstände kommen nur aus Transaktionen
-
-## Nächste Schritte
-
-1. Phase 3: Schreibende Geschäftslogik (Anlegen, Umbuchen, Korrigieren)
-2. Phase 4: Appwrite (Database, Auth, Permissions)
-3. Phase 5: comdirect CSV-Import inkl. Duplikat- und Umbuchungserkennung
-4. Phase 6–7: Tests ausbauen, Docker + nginx Deployment
+Frische DB enthält **Girokonto** und **Tagesgeldkonto** (Saldo 0) sowie leere Starter-Budgets. Kontostände per Saldenkorrektur oder optional beim CSV-Import setzen.

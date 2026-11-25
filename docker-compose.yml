@@ -1,0 +1,20 @@
+services:
+  nestly:
+    build: .
+    container_name: nestly
+    restart: unless-stopped
+    ports:
+      # Bind to localhost only — put nginx/Caddy in front for nestly.inthecorner.de
+      - "127.0.0.1:4318:4318"
+    environment:
+      PORT: "4318"
+      HOST: "0.0.0.0"
+      DATA_DIR: /data
+      STATIC_DIR: /app/dist/household-budget/browser
+      # Optional shared password for /api (leave empty for open LAN — not recommended on public net)
+      NESTLY_PASSWORD: ${NESTLY_PASSWORD:-}
+    volumes:
+      - nestly-data:/data
+
+volumes:
+  nestly-data:

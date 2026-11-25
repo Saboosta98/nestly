@@ -20,5 +20,7 @@ export interface Transaction {
   importFingerprint: string | null;
   /** Links paired legs of an internal account transfer */
   transferGroupId: string | null;
+  /** Set when the booking came from a CSV import batch */
+  importBatchId?: string | null;
   createdAt: string;
 }
