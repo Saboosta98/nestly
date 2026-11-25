@@ -11,7 +11,10 @@ services:
       HOST: "0.0.0.0"
       DATA_DIR: /data
       STATIC_DIR: /app/dist/household-budget/browser
-      # Optional shared password for /api (leave empty for open LAN — not recommended on public net)
+      # Recommended: first household admin (created once when users table is empty)
+      NESTLY_ADMIN_USER: ${NESTLY_ADMIN_USER:-}
+      NESTLY_ADMIN_PASSWORD: ${NESTLY_ADMIN_PASSWORD:-}
+      # Legacy shared password (optional). Prefer user accounts above.
       NESTLY_PASSWORD: ${NESTLY_PASSWORD:-}
     volumes:
       - nestly-data:/data

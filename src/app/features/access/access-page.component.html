@@ -1,0 +1,85 @@
+<section class="access">
+  <header class="access__header">
+    <p class="access__eyebrow">Sicherheit</p>
+    <h2>Zugang</h2>
+    <p>
+      Nur angemeldete Haushaltsmitglieder sehen Konten, Budgets und Buchungen.
+      Admins können Personen hinzufügen oder entfernen.
+    </p>
+  </header>
+
+  @if (error) {
+    <p class="access__banner access__banner--error" role="alert">{{ error }}</p>
+  }
+  @if (success) {
+    <p class="access__banner access__banner--ok">{{ success }}</p>
+  }
+
+  <section class="access__panel" aria-labelledby="members-heading">
+    <h3 id="members-heading">Haushaltsmitglieder</h3>
+    @if (loading) {
+      <p class="access__muted">Laden…</p>
+    } @else if (users.length === 0) {
+      <p class="access__muted">Noch keine Benutzerkonten.</p>
+    } @else {
+      <ul class="access__list">
+        @for (user of users; track user.id) {
+          <li>
+            <div>
+              <strong>{{ user.displayName }}</strong>
+              <span>{{ '@' + user.username }} · {{ user.role === 'admin' ? 'Admin' : 'Mitglied' }}</span>
+            </div>
+            @if (user.id !== currentUser?.id) {
+              <button type="button" class="access__danger" (click)="remove(user)">
+                Entfernen
+              </button>
+            } @else {
+              <span class="access__you">Du</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="access__panel" aria-labelledby="add-heading">
+    <h3 id="add-heading">Person einladen</h3>
+    <form class="access__form" (submit)="$event.preventDefault(); addMember()">
+      <label>
+        Anzeigename
+        <input [(ngModel)]="displayName" name="displayName" autocomplete="name" />
+      </label>
+      <label>
+        Benutzername
+        <input
+          [(ngModel)]="username"
+          name="username"
+          required
+          autocomplete="username"
+          placeholder="z. B. timo"
+        />
+      </label>
+      <label>
+        Passwort
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          minlength="8"
+          autocomplete="new-password"
+        />
+      </label>
+      <label>
+        Rolle
+        <select [(ngModel)]="role" name="role">
+          <option value="member">Mitglied</option>
+          <option value="admin">Admin</option>
+        </select>
+      </label>
+      <button type="submit" [disabled]="saving || !username.trim() || password.length < 8">
+        {{ saving ? 'Speichern…' : 'Hinzufügen' }}
+      </button>
+    </form>
+  </section>
+</section>

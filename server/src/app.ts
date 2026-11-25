@@ -3,27 +3,161 @@ import cors from 'cors';
 import multer from 'multer';
 import fs from 'node:fs';
 import path from 'node:path';
-import { optionalAuth } from './auth.js';
-import { NESTLY_PASSWORD, STATIC_DIR } from './config.js';
+import {
+  authRequired,
+  getAuthMode,
+  requireAdmin,
+  requireAuth,
+  setupRequired,
+} from './auth.js';
+import { STATIC_DIR } from './config.js';
 import * as store from './store.js';
+import * as users from './users.js';
 
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 },
 });
 
+function extractBearer(req: Request): string {
+  const header = req.header('authorization') ?? '';
+  return header.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() ?? '';
+}
+
 export function createApp() {
   const app = express();
   app.use(cors());
   app.use(express.json({ limit: '2mb' }));
-  app.use(optionalAuth);
+  app.use(requireAuth);
 
   app.get('/api/health', (_req, res) => {
     res.json({
       ok: true,
-      authRequired: Boolean(NESTLY_PASSWORD),
       service: 'nestly',
+      authRequired: authRequired(),
+      setupRequired: setupRequired(),
+      authMode: getAuthMode(),
     });
+  });
+
+  app.post('/api/auth/setup', (req, res, next) => {
+    try {
+      if (!setupRequired()) {
+        res.status(409).json({
+          error: 'Setup ist nicht mehr möglich — Zugang ist bereits konfiguriert.',
+        });
+        return;
+      }
+      const body = req.body ?? {};
+      const user = users.createUser({
+        username: String(body.username ?? ''),
+        displayName: String(body.displayName ?? body.username ?? ''),
+        password: String(body.password ?? ''),
+        role: 'admin',
+      });
+      const session = users.authenticate(user.username, String(body.password));
+      if (!session) {
+        res.status(500).json({ error: 'Setup fehlgeschlagen.' });
+        return;
+      }
+      res.status(201).json({
+        user: session.user,
+        token: session.token,
+        expiresAt: session.expiresAt,
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.post('/api/auth/login', (req, res, next) => {
+    try {
+      if (users.countUsers() === 0) {
+        res.status(400).json({
+          error: 'Noch kein Benutzer angelegt. Bitte zuerst den Admin einrichten.',
+          code: 'setup_required',
+        });
+        return;
+      }
+      const body = req.body ?? {};
+      const session = users.authenticate(
+        String(body.username ?? ''),
+        String(body.password ?? ''),
+      );
+      if (!session) {
+        res.status(401).json({ error: 'Benutzername oder Passwort ungültig.' });
+        return;
+      }
+      res.json({
+        user: session.user,
+        token: session.token,
+        expiresAt: session.expiresAt,
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.post('/api/auth/logout', (req, res) => {
+    users.revokeSession(extractBearer(req));
+    res.status(204).end();
+  });
+
+  app.get('/api/auth/me', (req, res) => {
+    if (req.nestlyUser) {
+      res.json({ user: req.nestlyUser, auth: 'session' });
+      return;
+    }
+    if (req.nestlyAuth === 'shared_password') {
+      res.json({
+        user: {
+          id: 'shared',
+          username: 'haushalt',
+          displayName: 'Haushalt',
+          role: 'admin',
+          createdAt: '',
+        },
+        auth: 'shared_password',
+      });
+      return;
+    }
+    res.status(401).json({ error: 'Nicht angemeldet.' });
+  });
+
+  app.get('/api/users', requireAdmin, (_req, res) => {
+    res.json(users.listUsers());
+  });
+
+  app.post('/api/users', requireAdmin, (req, res, next) => {
+    try {
+      const body = req.body ?? {};
+      const role = body.role === 'admin' ? 'admin' : 'member';
+      const user = users.createUser({
+        username: String(body.username ?? ''),
+        displayName: String(body.displayName ?? body.username ?? ''),
+        password: String(body.password ?? ''),
+        role,
+      });
+      res.status(201).json(user);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.delete('/api/users/:id', requireAdmin, (req, res, next) => {
+    try {
+      const actingId = req.nestlyUser?.id;
+      if (!actingId) {
+        res.status(403).json({
+          error: 'Mitgliederverwaltung braucht ein Benutzerkonto (kein Shared-Passwort).',
+        });
+        return;
+      }
+      users.deleteUser(req.params.id, actingId);
+      res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
   });
 
   app.get('/api/accounts', (_req, res) => {

@@ -1,50 +1,161 @@
-<div class="shell">
-  <header class="shell__top">
-    <div class="shell__brand">
-      <div class="shell__logo" aria-hidden="true">
-        <span></span>
-      </div>
-      <div>
-        <p class="shell__product">Nestly</p>
-        <h1>Budget</h1>
-      </div>
-    </div>
-    <p class="shell__tagline">Gemeinsame Finanzen im Blick</p>
-  </header>
+@if (gate === 'loading') {
+  <div class="gate gate--loading" role="status">Nestly wird geladen…</div>
+}
 
-  @if (showAuth) {
-    <section class="shell__auth" aria-label="Zugang">
-      <p>Diese Instanz ist mit einem Kennwort geschützt.</p>
-      <form (submit)="$event.preventDefault(); savePassword()">
-        <input
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="NESTLY_PASSWORD"
-          autocomplete="current-password"
-        />
-        <button type="submit">Entsperren</button>
-      </form>
-      @if (authError) {
-        <p class="shell__auth-error">{{ authError }}</p>
+@if (gate === 'setup' || gate === 'login' || gate === 'shared') {
+  <div class="gate" [attr.data-mode]="gate">
+    <div class="gate__panel">
+      <div class="gate__brand">
+        <div class="shell__logo" aria-hidden="true"><span></span></div>
+        <div>
+          <p class="shell__product">Nestly</p>
+          <h1>
+            @if (gate === 'setup') {
+              Zugang einrichten
+            } @else {
+              Anmelden
+            }
+          </h1>
+        </div>
+      </div>
+
+      @if (gate === 'setup') {
+        <p class="gate__copy">
+          Lege den ersten Admin-Zugang an. Danach können nur angemeldete
+          Haushaltsmitglieder die Finanzen sehen.
+        </p>
+        <form class="gate__form" (submit)="$event.preventDefault(); submitSetup()">
+          <label>
+            Anzeigename
+            <input [(ngModel)]="displayName" name="displayName" autocomplete="name" />
+          </label>
+          <label>
+            Benutzername
+            <input
+              [(ngModel)]="username"
+              name="username"
+              required
+              autocomplete="username"
+              placeholder="z. B. timo"
+            />
+          </label>
+          <label>
+            Passwort (min. 8 Zeichen)
+            <input
+              type="password"
+              [(ngModel)]="password"
+              name="password"
+              required
+              minlength="8"
+              autocomplete="new-password"
+            />
+          </label>
+          <button type="submit" [disabled]="submitting || !username.trim() || password.length < 8">
+            {{ submitting ? 'Einrichten…' : 'Admin anlegen' }}
+          </button>
+        </form>
       }
-    </section>
-  }
 
-  <main class="shell__main">
-    <router-outlet />
-  </main>
+      @if (gate === 'login') {
+        <p class="gate__copy">
+          Nur Personen mit eigenem Nestly-Konto haben Zugriff auf diesen Haushalt.
+        </p>
+        <form class="gate__form" (submit)="$event.preventDefault(); submitLogin()">
+          <label>
+            Benutzername
+            <input
+              [(ngModel)]="username"
+              name="username"
+              required
+              autocomplete="username"
+            />
+          </label>
+          <label>
+            Passwort
+            <input
+              type="password"
+              [(ngModel)]="password"
+              name="password"
+              required
+              autocomplete="current-password"
+            />
+          </label>
+          <button type="submit" [disabled]="submitting || !username.trim() || !password">
+            {{ submitting ? 'Prüfen…' : 'Anmelden' }}
+          </button>
+        </form>
+      }
 
-  <nav class="shell__nav" aria-label="Hauptnavigation">
-    @for (item of navItems; track item.path) {
-      <a
-        [routerLink]="item.path"
-        routerLinkActive="is-active"
-        [routerLinkActiveOptions]="{ exact: item.exact }"
-      >
-        <span class="shell__nav-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
-        <span>{{ item.label }}</span>
-      </a>
-    }
-  </nav>
-</div>
+      @if (gate === 'shared') {
+        <p class="gate__copy">
+          Diese Instanz nutzt noch das gemeinsame Instanz-Kennwort
+          (<code>NESTLY_PASSWORD</code>). Empfohlen: Benutzerkonten unter Zugang.
+        </p>
+        <form class="gate__form" (submit)="$event.preventDefault(); submitShared()">
+          <label>
+            Kennwort
+            <input
+              type="password"
+              [(ngModel)]="sharedPassword"
+              name="sharedPassword"
+              required
+              autocomplete="current-password"
+            />
+          </label>
+          <button type="submit" [disabled]="submitting || !sharedPassword.trim()">
+            {{ submitting ? 'Prüfen…' : 'Entsperren' }}
+          </button>
+        </form>
+      }
+
+      @if (authError) {
+        <p class="gate__error" role="alert">{{ authError }}</p>
+      }
+    </div>
+  </div>
+}
+
+@if (showApp) {
+  <div class="shell">
+    <header class="shell__top">
+      <div class="shell__brand">
+        <div class="shell__logo" aria-hidden="true">
+          <span></span>
+        </div>
+        <div>
+          <p class="shell__product">Nestly</p>
+          <h1>Budget</h1>
+        </div>
+      </div>
+      <div class="shell__meta">
+        <p class="shell__tagline">Gemeinsame Finanzen im Blick</p>
+        @if (user && !useDemo) {
+          <div class="shell__session">
+            <span class="shell__who">{{ user.displayName }}</span>
+            @if (isAdmin) {
+              <a routerLink="/zugang" class="shell__link">Zugang</a>
+            }
+            <button type="button" class="shell__logout" (click)="logout()">Abmelden</button>
+          </div>
+        }
+      </div>
+    </header>
+
+    <main class="shell__main">
+      <router-outlet />
+    </main>
+
+    <nav class="shell__nav" aria-label="Hauptnavigation">
+      @for (item of navItems; track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: item.exact }"
+        >
+          <span class="shell__nav-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  </div>
+}
