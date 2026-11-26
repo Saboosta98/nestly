@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 – Haushalts-Authentifizierung
+
+- Benutzerkonten (Admin/Mitglied) mit scrypt-Passwort-Hash und Session-Token
+- Login- und Erst-Setup-Screen; API ohne gültige Sitzung gesperrt
+- Seite **Zugang**: Admins laden weitere Personen ein oder entfernen sie
+- Bootstrap per `NESTLY_ADMIN_USER` / `NESTLY_ADMIN_PASSWORD` (Docker/.env)
+- Legacy `NESTLY_PASSWORD` bleibt als Fallback nutzbar
+
 ## 1.0.0 – Self-hosted Persistenz & comdirect-Import
 
 - Express-API + SQLite (`DATA_DIR`) für Accounts, Budgets, Allocations, Transactions, Imports

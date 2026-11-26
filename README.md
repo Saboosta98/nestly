@@ -1,6 +1,6 @@
 # Nestly (Haushalt Budget)
 
-Self-hosted Web-App für gemeinsame Haushaltsfinanzen: reale comdirect-Konten, virtuelle Budgets, CSV-Import.
+Self-hosted Web-App für gemeinsame Haushaltsfinanzen: reale comdirect-Konten, virtuelle Budgets, CSV-Import — geschützt durch Anmeldung.
 
 ## Konzept
 
@@ -9,6 +9,7 @@ Self-hosted Web-App für gemeinsame Haushaltsfinanzen: reale comdirect-Konten, v
 - Interne Umbuchungen zwischen Konten sind **keine** Einnahmen/Ausgaben.
 - Abstimmung: `Gesamtguthaben = Summe Budgets + nicht zugeordnetes Guthaben`.
 - Beträge intern als **Integer in Cent**.
+- **Zugang:** nur angemeldete Haushaltsmitglieder (Benutzername + Passwort). Admins verwalten Personen unter **Zugang**.
 
 ## Stack
 
@@ -16,6 +17,7 @@ Self-hosted Web-App für gemeinsame Haushaltsfinanzen: reale comdirect-Konten, v
 |------|---------|
 | UI | Angular 19 SPA |
 | API | Express + SQLite (`better-sqlite3`) |
+| Auth | scrypt-Passwörter + Session-Token (Bearer) |
 | Deploy | Docker Compose hinter nginx/Caddy |
 
 ## Lokal entwickeln
@@ -28,7 +30,15 @@ npm start            # Angular http://localhost:4317 (Proxy /api → 4318)
 
 Oder parallel: `npm run dev`.
 
-Optional nur Demo-Daten (ohne API):
+Beim ersten Start ohne Benutzer: Setup-Screen in der UI **oder** Env setzen:
+
+```bash
+export NESTLY_ADMIN_USER=timo
+export NESTLY_ADMIN_PASSWORD='dein-sicheres-passwort'
+npm run start:api
+```
+
+Optional nur Demo-Daten (ohne API, ohne Auth):
 
 ```bash
 npm run start:demo
@@ -37,7 +47,7 @@ npm run start:demo
 Tests:
 
 ```bash
-npm run test:server  # CSV-Parser, Dedup, Transfer-Erkennung
+npm run test:server  # CSV + Passwort-Hashing
 npm test             # Angular (Karma headless)
 npm run build        # Produktionsbuild → dist/household-budget/browser
 ```
@@ -45,15 +55,19 @@ npm run build        # Produktionsbuild → dist/household-budget/browser
 ## Produktion mit Docker
 
 ```bash
-# optional: echo 'NESTLY_PASSWORD=geheim' > .env
+cat > .env <<'EOF'
+NESTLY_ADMIN_USER=timo
+NESTLY_ADMIN_PASSWORD=dein-sicheres-passwort
+EOF
+
 docker compose up -d --build
 ```
 
 - App/API: `http://127.0.0.1:4318`
 - Persistenz: Volume `nestly-data` → `/data/nestly.sqlite`
-- Env: `DATA_DIR`, `NESTLY_PASSWORD` (optional), `PORT`, `STATIC_DIR`
+- Env: `DATA_DIR`, `NESTLY_ADMIN_USER`, `NESTLY_ADMIN_PASSWORD`, optional `NESTLY_PASSWORD` (Legacy), `PORT`, `STATIC_DIR`
 
-Ohne Kennwort ist die API im LAN offen – hinter dem öffentlichen Proxy besser `NESTLY_PASSWORD` setzen.
+Die API ist ohne Anmeldung gesperrt. Beim ersten Start: Admin-Env setzen **oder** den Setup-Screen einmal durchlaufen. Weitere Personen danach in der App unter **Zugang**.
 
 ### Reverse-Proxy (nestly.inthecorner.de)
 
@@ -70,6 +84,7 @@ server {
     proxy_set_header Host $host;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
+    client_max_body_size 10m;
   }
 }
 ```
@@ -91,8 +106,8 @@ Siehe [docs/CSV-IMPORT.md](docs/CSV-IMPORT.md). Fixtures: `server/fixtures/`.
 ## Architektur
 
 ```
-src/app/          Angular UI + HttpDataSource
-server/           Express API + SQLite + CSV-Logik
+src/app/          Angular UI + HttpDataSource + Login/Zugang
+server/           Express API + SQLite + Auth + CSV-Logik
 docs/             Architektur & CSV-Format
 ```
 

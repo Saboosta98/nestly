@@ -46,6 +46,14 @@ export const routes: Routes = [
           ),
         title: 'CSV-Import · Nestly',
       },
+      {
+        path: 'zugang',
+        loadComponent: () =>
+          import('./features/access/access-page.component').then(
+            (m) => m.AccessPageComponent,
+          ),
+        title: 'Zugang · Nestly',
+      },
     ],
   },
   { path: '**', redirectTo: '' },
